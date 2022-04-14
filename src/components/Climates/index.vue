@@ -1,31 +1,24 @@
 <template>
     <main :class="$style.climates">
-        <img v-if="loading" :src="loader" :class="$style.loader" alt="Loading" />
-        <div v-else :class="$style.list">
-            <Card v-for="item in data" :key="item.id" :item="item" :loading="isFetching" />
+        <div v-if="error" :class="$style.error">
+            <div :class="$style.message">Something went wrong</div>
+            <button :class="$style.button" type="button" @click="refetch">Try Again</button>
         </div>
-        <!-- {isLoading ? (
-            
-        ) : error ? (
-            <div className={styles.error}>
-                <div className={styles.message}>Something went wrong</div>
-                <button className={styles.button} type="button" onClick={() => window.location.reload(false)}>Try Again</button>
+        <template v-else>
+            <img v-if="isLoading" :src="loader" :class="$style.loader" alt="Loading" />
+            <div v-else :class="$style.list">
+                <Card v-for="item in data" :key="item.id" :item="item" :loading="isFetching" />
             </div>
-        ) : (
-            <div className={styles.list}>
-                {data.map((item) => (
-                    <Card key={item.id} item={item} loading={isFetching} />
-                ))}
-            </div>
-        )} -->
+        </template>
+       
     </main>
 </template>
 
 <script lang="ts">
 import Card from '@/components/Card/index.vue';
-import { ref, onMounted } from 'vue';
 import axios from '@/services/api';
 import loader from '@/assets/loader.svg';
+import { onMounted, ref } from 'vue';
 
 export default {
   name: 'climates-component',
@@ -33,10 +26,12 @@ export default {
     Card,
   },
   setup() {
-    const loading = ref(true);
     const data = ref([]);
-    
-    onMounted(async () => {
+    const isLoading = ref(true);
+    const isFetching = ref(false);
+    const error = ref(false);
+
+    const getClimates = async () => {
         const color = (temp: number) => {
             if (temp < 6) return 'blue'
             else if (temp > 25) return 'red'
@@ -49,17 +44,40 @@ export default {
                 sys: d.sys,
                 main: d.main,
                 id: d.id,
-                updated: new Date().toLocaleTimeString('en-US'),
-                color: color(Number(d.main.temp.toFixed(0)))
+                updated: new Date(),
+                color: color(Math.round(d.main.temp))
             }
         });
         data.value = climates;
-        loading.value = false;
+        localStorage.setItem("climates", JSON.stringify(climates));
+        isLoading.value = false;
+        isFetching.value = false;
+    }
+
+    setInterval(() => {
+        isFetching.value = true;
+        getClimates();
+    }, 600000);
+    
+    onMounted(() => {
+        if (localStorage.climates) {
+            const dataStorage = JSON.parse(localStorage.climates);
+            const date1 = new Date(dataStorage[0].updated).getTime();
+            const date2 = new Date().getTime();
+            const diff = Math.round((date2 - date1) / 1000);
+            if (diff > 10) getClimates()
+            else {
+                data.value = JSON.parse(localStorage.climates)
+                isLoading.value = false;
+            }
+        } else getClimates();
     });
     return {
       data,
+      isLoading,
+      isFetching,
+      error,
       loader,
-      loading,
     };
   },
 };

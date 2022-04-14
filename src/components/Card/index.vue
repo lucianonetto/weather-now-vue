@@ -4,7 +4,7 @@
         {{ item.name }}, {{ item.sys.country }}
     </div>
     <div v-if="loading" :class="$style.loading">
-        <img src={loader} :class="$style.loader" alt="Loading" />
+        <img :src="loader" :class="$style.loader" alt="Loading" />
     </div>
     <template v-else>
         <div :class="$style.content">
@@ -25,7 +25,8 @@
                     </div>
                 </div>
                 <div :class="$style.updated">
-                    Updated at {{ item.updated }}
+                    Updated at {{ new Date(item.updated).toLocaleTimeString('en-US') }}
+                    <!-- Updated at {{ item.updated.toLocaleTimeString('en-US') }} -->
                 </div>
             </div>
         </div>
@@ -34,12 +35,18 @@
 </template>
 
 <script lang="ts">
-// import loader from '../../assets/loader.svg';
+import loader from '../../assets/loader.svg';
 
 export default {
   name: 'card-component',
   props: {
-    item: Array,
+    item: Object,
+    loading: Boolean,
+  },
+  setup() {
+    return {
+      loader,
+    };
   },
 };
 </script>

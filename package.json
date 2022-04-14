@@ -14,7 +14,8 @@
     "axios": "^0.26.1",
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
-    "vue-class-component": "^8.0.0-0"
+    "vue-class-component": "^8.0.0-0",
+    "vue-query": "^1.22.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",
