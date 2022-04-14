@@ -78,6 +78,7 @@ export default {
       isFetching,
       error,
       loader,
+      getClimates,
     };
   },
 };
