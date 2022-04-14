@@ -65,7 +65,7 @@ export default {
             const date1 = new Date(dataStorage[0].updated).getTime();
             const date2 = new Date().getTime();
             const diff = Math.round((date2 - date1) / 1000);
-            if (diff > 10) getClimates()
+            if (diff > 600) getClimates()
             else {
                 data.value = JSON.parse(localStorage.climates)
                 isLoading.value = false;
