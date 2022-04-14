@@ -26,7 +26,16 @@ export default {
     Card,
   },
   setup() {
-    const data = ref([]);
+    interface Info { 
+        name: string,
+        sys: object,
+        main: {
+            temp: number,
+        },
+        id: number,
+        updated: string,
+    }
+    const data = ref<Array<Info>>([]);
     const isLoading = ref(true);
     const isFetching = ref(false);
     const error = ref(false);
@@ -38,7 +47,7 @@ export default {
             return 'orange'
         }
         const response = await axios.get(`group?id=3421319,3445709,184745&appid=${process.env.VUE_APP_API_KEY}&units=metric`);
-        const climates = response.data.list.map((d: { name: string; sys: object; main: { temp: number; }; id: number; }) => {
+        const climates = response.data.list.map((d: Info) => {
             return {
                 name: d.name,
                 sys: d.sys,
